@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Home</title>
+  <meta charset="utf-7">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+    async function answer() {
+      $.ajax({
+        type: "GET",
+        url: "/prediction",
+        dataType: "text",
+        async: true,
+        success: function (data) {
+          document.getElementById("answer_span").innerHTML = data;
+        },
+        error: function () {
+          document.getElementById("answer_span").innerHTML = "에러ㅠ";
+        }
+      })
+    }
+  </script>
+</head>
+
+<body>
+  <h1 id="title">Mediapipe를 활용한 수화 인식 demo</h1>
+  <p style="text-align: center;">오른손을 들어 손으로 숫자를 표현해주세요.</p>
+  <div id="container">
+    <div class="mx-auto" , style="width : 700px">
+      <img src="{{ url_for('video_feed') }}">
+    </div>
+    <div id="answer_div">
+      <button id="answer_btn" onclick="answer()">정답</button>
+      <p id="answer_p">Result : <span id="answer_span"></span></p>
+    </div>
+  </div>
+</body>
+
+</html>
