@@ -1,6 +1,5 @@
 from flask import Flask, render_template, Response, jsonify
 import cv2
-# from camera import Video
 import mediapipe as mp
 import numpy as np
 import pickle
@@ -58,6 +57,10 @@ def gen(camera):
     while True:
         _, img = camera.read()
         img = cv2.flip(img, 1)
+        result = hands.process(img)
+        if result.multi_hand_landmarks is not None:
+            for res in result.multi_hand_landmarks:
+                mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
         frame = cv2.imencode('.jpg', img)[1].tobytes()
         yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
@@ -65,7 +68,6 @@ def gen(camera):
 def video_feed():
     return Response(gen(cap), 
                     mimetype='multipart/x-mixed-replace; boundary=frame')
-
 
 @app.route("/prediction", methods=["GET"])
 def prediction():
@@ -77,6 +79,7 @@ def prediction():
     if result.multi_hand_landmarks is not None:
         return str(model(result.multi_hand_landmarks))
     return "Error!"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
