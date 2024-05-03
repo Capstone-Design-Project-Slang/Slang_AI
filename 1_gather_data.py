@@ -10,10 +10,10 @@ CURDIR = os.path.realpath(__file__)
 os.chdir(os.path.dirname(CURDIR))
 
 # 1부터 20까지의 자연수를 학습 대상으로 합니다.
-actions = [x for x in range(1, 11)]
+actions = ['축구','야구', '농구', '배구', '탁구', '테니스', '태권도', '씨름', '유도', '수영', '스케이트', '스키',  '사격', '팬싱', '검도']
 
 # 각 동작을 30초의 loop를 돌며 기록한다.
-secs_for_action = 30
+secs_for_action = 10
 
 # 반복되는 한 동작의 프레임 개수(seq의 길이)를 30으로 지정한다. 임의의 길이이다.
 # SEQ_LENGTH = 30
@@ -22,7 +22,7 @@ secs_for_action = 30
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 hands = mp_hands.Hands(
-    max_num_hands=1, # 한 손만을 인식할 수 있도록 한다.
+    max_num_hands=2, # 한 손만을 인식할 수 있도록 한다.
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5)
 
