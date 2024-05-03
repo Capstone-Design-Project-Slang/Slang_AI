@@ -1,6 +1,5 @@
 from flask import Flask, render_template, Response, jsonify
 import cv2
-# from camera import Video
 import mediapipe as mp
 import numpy as np
 import pickle
@@ -149,6 +148,7 @@ def prediction_food():
     if result.multi_hand_landmarks is not None:
         return str(model(result.multi_hand_landmarks, clf_food, 3))
     return "Error!"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
