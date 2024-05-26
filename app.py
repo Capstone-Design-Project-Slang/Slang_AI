@@ -5,22 +5,18 @@ import numpy as np
 import pickle
 from flask_cors import CORS
 
-
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
-with open ("lgbm_model_sports.pkl", "rb") as f:
+with open("lgbm_model_sports.pkl", "rb") as f:
     clf_sports = pickle.load(f)
 
-with open ("lgbm_model_korean.pkl", "rb") as f:
+with open("lgbm_model_korean.pkl", "rb") as f:
     clf_korean = pickle.load(f)
-with open ("lgbm_model_animals.pkl", "rb") as f:
+with open("lgbm_model_animals.pkl", "rb") as f:
     clf_animals = pickle.load(f)
-with open ("lgbm_model_food.pkl", "rb") as f:
+with open("lgbm_model_food.pkl", "rb") as f:
     clf_food = pickle.load(f)
-
-# sign language "J" 와 "Z"는 동적인 문자이기 때문에 demo1 데이터셋에서 제외하였음.
-# actions = ['축구','야구', '농구', '배구', '탁구', '테니스', '태권도', '씨름', '유도', '수영', '스케이트', '스키', '사격', '팬싱', '검도' ]
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -76,6 +72,8 @@ def model(hand, clf, flag):
 def gen(camera):
     while True:
         _, img = camera.read()
+        if img is None:
+            continue
         img = cv2.flip(img, 1)
         result = hands.process(img)
         if result.multi_hand_landmarks is not None:
@@ -83,6 +81,7 @@ def gen(camera):
                 mp_drawing.draw_landmarks(img, res, mp_hands.HAND_CONNECTIONS)
         frame = cv2.imencode('.jpg', img)[1].tobytes()
         yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')    
+
 @app.route("/video_sports")
 def video_sports():
     return Response(gen(cap), 
@@ -92,10 +91,12 @@ def video_sports():
 def video_korean():
     return Response(gen(cap), 
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
 @app.route("/video_animals")
 def video_animals():
     return Response(gen(cap), 
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
 @app.route("/video_food")
 def video_food():
     return Response(gen(cap), 
@@ -104,8 +105,9 @@ def video_food():
 
 @app.route("/prediction_sports", methods=["GET"])
 def prediction_sports():
-    # print("Inside")
     ret, img = cap.read()
+    if not ret:
+        return "Error!"
     img = cv2.flip(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     result = hands.process(img)
@@ -116,8 +118,9 @@ def prediction_sports():
 
 @app.route("/prediction_korean", methods=["GET"])
 def prediction_korean():
-    # print("Inside")
     ret, img = cap.read()
+    if not ret:
+        return "Error!"
     img = cv2.flip(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     result = hands.process(img)
@@ -128,8 +131,9 @@ def prediction_korean():
 
 @app.route("/prediction_animals", methods=["GET"])
 def prediction_animals():
-    # print("Inside")
     ret, img = cap.read()
+    if not ret:
+        return "Error!"
     img = cv2.flip(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     result = hands.process(img)
@@ -137,10 +141,12 @@ def prediction_animals():
     if result.multi_hand_landmarks is not None:
         return str(model(result.multi_hand_landmarks, clf_animals, 2))
     return "Error!"
+
 @app.route("/prediction_food", methods=["GET"])
 def prediction_food():
-    # print("Inside")
     ret, img = cap.read()
+    if not ret:
+        return "Error!"
     img = cv2.flip(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     result = hands.process(img)
