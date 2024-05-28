@@ -1,6 +1,11 @@
 opencv-contrib-python==4.9.0.80
 opencv-python==4.9.0.80
+<<<<<<< HEAD
 numpy==1.26.4
 
 mediapipe
 scikit-learn
+=======
+mediapipe==0.10.11
+numpy==1.26.4
+>>>>>>> 5947c900056e9fd479577e05c33bbf511ea389c5
